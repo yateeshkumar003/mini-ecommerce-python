@@ -1,0 +1,100 @@
+class Product:
+    def __init__(self,name,price,deal_price,rating):
+        self.name = name
+        self.price = price
+        self.deal_price = deal_price
+        self.rating = rating
+        self.you_save = price - deal_price
+        
+    def display_product_details(self):
+        print("product name :{}".format(self.name))
+        print("product price: {}$".format(self.price))
+        print("product deal_price: {}$".format(self.deal_price))
+        print("product rating: {}".format(self.rating))
+        print("you_save: {}$".format(self.you_save))
+    def get_deal_price(self):
+        return self.deal_price
+        
+class ElectronicItem(Product):
+    def __init__(self,name,price,deal_price,rating,warranty_in_months):
+        super().__init__(name,price,deal_price,rating)
+        self.warranty_in_months = warranty_in_months
+    def display_product_details(self):
+        super().display_product_details()
+        print("warranty_in_months: {}".format(self.warranty_in_months))
+        
+class GroceryItems(Product):
+    def __init__(self,name,price,deal_price,rating,expiery_date):
+        super().__init__(name,price,deal_price,rating)
+        self.expiery_date = expiery_date
+    def display_product_details(self):
+        super().display_product_details()
+        print("expiery_date: {}".format(self.expiery_date))
+
+class Laptops(ElectronicItem):
+    def __init__(self,name,price,deal_price,rating,warranty_in_months,ram,processor,storage):
+        super().__init__(name,price,deal_price,rating,warranty_in_months)
+        self.ram = ram
+        self.processor = processor
+        self.storage = storage
+    def display_product_details(self):
+        super().display_product_details()
+        print("Laptop ram:{}".format(self.ram))
+        print("Laptop processor: {}".format(self.processor))
+        print("Laptop storage: {}".format(self.storage))
+        
+class Order :
+    #delivery_charges is a class variable it wont change for every user
+    delivery_charges = {
+        "Normal" : 0,
+        "Prime_Delivery" : 100
+    }
+    def __init__(self,delivery_method,delivery_address):
+        self.items_in_carts =[]
+        self.delivery_method = delivery_method 
+        self.delivery_address = delivery_address
+        
+    def add_items(self,product,quantity):
+        items = (product, quantity)
+        self.items_in_carts.append(items)
+    
+    def display_order_details(self):
+        print("Delivery method :{}".format(self.delivery_method))
+        print("delivery_address :{}".format(self.delivery_address))
+        print("Products")
+        print("-------------------------------------------")
+        for product,quantity in self.items_in_carts:
+            product.display_product_details()
+            print("quantity :{}".format(quantity))
+            print("----------------------------------------")
+        total_bill = self.get_total_bill()
+        print("TOTAL_BILL: {}".format(total_bill))
+        total_save = self.get_total_save()
+        print("TOTAL_SAVE: {}".format(total_save))
+        
+    def get_total_bill(self):
+        total_bill = 0
+        for products,quantity in self.items_in_carts:
+            total_bill += products.get_deal_price() * quantity
+            order_delivery_charges = Order.delivery_charges[self.delivery_method]
+        total_bill += order_delivery_charges
+        return total_bill 
+    def get_total_save(self):
+      total_Save = 0
+      for products,quantity in self.items_in_carts:
+        total_Save += products.you_save * quantity
+      return total_Save
+        
+    @classmethod
+    def update_delivery_charges(cls,delivery_method,charges):
+        cls.delivery_charges[delivery_method] = charges
+            
+milk = GroceryItems("milk",27,25,4,"24/4/25")
+tv = ElectronicItem("tv",45000,36000,4.5,18)
+lap = Laptops("HP ENVY",80000,64000,4.5,12,"8GB","RAYZON 8",512)
+my_orders = Order("Prime_Delivery","vishakapatanam")
+my_orders.add_items(milk,2)
+my_orders.add_items(tv,1)
+my_orders.add_items(lap,1)
+Order.update_delivery_charges("Prime_Delivery",200)
+my_orders.display_order_details()
